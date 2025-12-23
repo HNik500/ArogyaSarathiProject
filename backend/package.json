@@ -1,5 +1,5 @@
 {
-  "name": "healthvault-backend",
+  "name": "arogya-sarathi-backend",
   "type": "module",
   "dependencies": {
     "cors": "^2.8.5",

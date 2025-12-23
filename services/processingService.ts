@@ -1,4 +1,4 @@
-// Rule-based processing service for HealthVault
+// Rule-based processing service for Arogya Sarathi
 // Backend-connected deterministic logic (NO AI dependency)
 
 const API_BASE = "http://localhost:4000";

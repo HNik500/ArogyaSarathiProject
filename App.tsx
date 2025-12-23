@@ -483,7 +483,7 @@ const App: React.FC = () => {
       });
     }
 
-    // Clear all HealthVault-related global data
+    // Clear all Arogya Sarathi-related global data
     const keysToRemove = [
       "hv_patient_profiles",
       "hv_user_role",
@@ -496,12 +496,12 @@ const App: React.FC = () => {
       console.log("🗑️ Removed global data key:", key);
     });
 
-    // Clear all other HealthVault keys as backup
+    // Clear all other Arogya Sarathi keys as backup
     for (let i = localStorage.length - 1; i >= 0; i--) {
       const key = localStorage.key(i);
       if (key && key.startsWith("hv_")) {
         localStorage.removeItem(key);
-        console.log("🗑️ Removed backup HealthVault key:", key);
+        console.log("🗑️ Removed backup Arogya Sarathi key:", key);
       }
     }
 
@@ -1144,7 +1144,7 @@ const App: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-screen bg-emerald-600 p-6">
         <div className="text-center mb-10 text-white animate-in slide-in-from-top duration-700">
           <h1 className="text-4xl font-black tracking-tight mb-2">
-            HealthVault Terminal
+            Arogya Sarathi Terminal
           </h1>
           <p className="text-emerald-100 font-medium opacity-90">
             Medical Diagnostic Hub & Delta Sync
@@ -1342,7 +1342,7 @@ const App: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-screen bg-indigo-600 p-6">
         <div className="text-center mb-10 text-white animate-in slide-in-from-top duration-700">
           <h1 className="text-4xl font-black tracking-tight mb-2">
-            HealthVault Patient
+            Arogya Sarathi Patient
           </h1>
           <p className="text-indigo-100 font-medium opacity-90">
             Secure Medical Vault Setup
