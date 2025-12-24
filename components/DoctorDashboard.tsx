@@ -309,6 +309,23 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
             </div>
           </div>
 
+          {/* Symptom Text Section (if symptom-only case) */}
+          {selectedCase.symptomText && (
+            <div className="bg-indigo-50 rounded-[40px] p-10 border border-indigo-100 shadow-sm">
+              <h3 className="text-lg font-black text-slate-900 mb-6">
+                🏥 Patient Symptom Description
+              </h3>
+              <div className="bg-white rounded-2xl p-6 border border-indigo-200">
+                <p className="text-slate-800 text-lg font-medium leading-relaxed">
+                  "{selectedCase.symptomText}"
+                </p>
+                <p className="text-xs font-bold text-slate-500 mt-4">
+                  Submitted: {new Date(selectedCase.createdAt).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Images Section */}
           {selectedCase.images.length > 0 && (
             <div className="bg-white rounded-[40px] p-10 border border-slate-100 shadow-sm">

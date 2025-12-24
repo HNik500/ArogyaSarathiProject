@@ -48,6 +48,9 @@ export interface MedicalCase {
   patientDistrict: string;
   patientState: string;
   
+  // SYMPTOM TEXT (optional - for text-only submissions)
+  symptomText?: string;
+  
   // IMAGE DATA
   images: MedicalImage[];
   
@@ -126,6 +129,43 @@ export const createMedicalCase = (
   saveCaseToStorage(newCase);
   
   console.log(`✅ Medical case created: ${caseId}`);
+  return newCase;
+};
+
+// ==========================================
+// 1B. CREATE SYMPTOM-ONLY CASE (NO IMAGES)
+// ==========================================
+export const createSymptomCase = (
+  patientId: string,
+  patientName: string,
+  patientAge: number,
+  patientPhone: string,
+  patientDistrict: string,
+  patientState: string,
+  symptomText: string // ✅ Text-only submission
+): MedicalCase => {
+  const caseId = `CASE-${patientId}-${Date.now()}`;
+
+  const newCase: MedicalCase = {
+    caseId,
+    patientId,
+    patientName,
+    patientAge,
+    patientPhone,
+    patientDistrict,
+    patientState,
+    symptomText, // ✅ Store symptom text
+    images: [], // ✅ Empty images array (optional)
+    replies: [],
+    status: 'PENDING',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+
+  // Save to localStorage under shared key
+  saveCaseToStorage(newCase);
+  
+  console.log(`✅ Symptom case created: ${caseId}`);
   return newCase;
 };
 

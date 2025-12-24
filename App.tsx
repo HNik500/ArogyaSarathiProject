@@ -66,8 +66,10 @@ import MedicineReminder from "./components/MedicineReminder";
 import MedicineOrdering from "./components/MedicineOrdering";
 import PatientImageUpload from "./components/PatientImageUpload";
 import DoctorDashboard from "./components/DoctorDashboard";
+import SymptomDisplay from "./components/SymptomDisplay";
 import { processingService } from "./services/processingService";
 import { reminderService } from "./services/reminderService";
+import { createSymptomCase, getCasesByPatient } from "./services/medicalCasesService";
 
 const STATE_LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   Telangana: "Telugu",
@@ -903,15 +905,18 @@ const App: React.FC = () => {
   // Actions
   const handleRecordSymptom = () => {
     if (!newSymptom.trim()) return;
-    const record: MedicalRecord = {
-      id: `SYM-${Date.now()}`,
-      type: "SYMPTOM",
-      content: newSymptom,
-      timestamp: Date.now(),
-      status: "PENDING",
-      severity: "MEDIUM",
-    };
-    setVault((prev) => ({ ...prev, records: [...prev.records, record] }));
+    
+    // Create symptom case in unified medicalCases storage
+    createSymptomCase(
+      patientProfile!.patientId,
+      patientProfile!.name,
+      patientProfile!.age,
+      patientProfile!.phone,
+      patientProfile!.district,
+      patientProfile!.state,
+      newSymptom
+    );
+    
     setNewSymptom("");
     setIsRecordingUI(false);
     // 🚀 FORCE SYNC IMMEDIATELY
@@ -2089,113 +2094,16 @@ const App: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Patient Symptoms Section */}
+                {/* Patient Symptoms Section - Using SymptomDisplay Component */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    <User size={14} /> <span>My Symptoms & Records</span>
+                    <User size={14} /> <span>My Symptoms & Responses</span>
                   </div>
-                  {(() => {
-                    const patientRecords = vault.records.filter(
-                      (record) =>
-                        record.type === "SYMPTOM" ||
-                        record.type === "VISUAL_TRIAGE" ||
-                        record.type === "HISTORY"
-                    );
-
-                    if (patientRecords.length === 0) {
-                      return (
-                        <div className="text-center py-16 bg-white rounded-[40px] border border-slate-100 shadow-sm">
-                          <User
-                            className="mx-auto mb-4 text-slate-200"
-                            size={48}
-                          />
-                          <p className="text-slate-400 text-xs font-bold">
-                            No symptoms recorded yet.
-                          </p>
-                        </div>
-                      );
-                    }
-
-                    return patientRecords
-                      .slice()
-                      .reverse()
-                      .map((record) => (
-                        <div
-                          key={record.id}
-                          className="bg-white rounded-[40px] p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md hover:border-indigo-100 group"
-                        >
-                          <div className="flex items-start gap-6">
-                            <div className="bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white p-4 rounded-3xl transition-colors">
-                              {record.type === "VISUAL_TRIAGE" ? (
-                                <Camera size={28} />
-                              ) : (
-                                <Activity size={28} />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex justify-between items-center mb-3">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                  {new Date(
-                                    record.timestamp
-                                  ).toLocaleDateString()}{" "}
-                                  •{" "}
-                                  {new Date(
-                                    record.timestamp
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </span>
-                                {record.status === "PENDING" && (
-                                  <div className="flex items-center gap-1.5 bg-amber-50 text-amber-700 text-[9px] font-black px-3 py-1 rounded-full uppercase">
-                                    <Wifi size={10} /> Local Storage
-                                  </div>
-                                )}
-                              </div>
-                              {(() => {
-                                const display = getDisplayText(
-                                  `local-${record.id}`,
-                                  record.content
-                                );
-                                return (
-                                  <>
-                                    <p className="text-slate-900 font-bold text-lg mb-1 leading-snug">
-                                      {display.primary}
-                                    </p>
-                                    {display.secondary && (
-                                      <p className="text-[11px] text-slate-500 font-semibold">
-                                        {display.secondary}
-                                      </p>
-                                    )}
-                                  </>
-                                );
-                              })()}
-                              {record.media?.analysis && (
-                                <p className="text-[10px] font-bold text-indigo-500 mb-3 uppercase tracking-wider">
-                                  Status: {record.media.analysis}
-                                </p>
-                              )}
-                              <button
-                                onClick={() =>
-                                  playVoiceBack(
-                                    record.id,
-                                    record.translatedContent || record.content!
-                                  )
-                                }
-                                className="flex items-center gap-3 text-xs font-black uppercase text-indigo-600 bg-indigo-50 px-6 py-3 rounded-2xl transition-all hover:bg-indigo-100 active:scale-95"
-                              >
-                                {isPlaying === record.id ? (
-                                  <Loader2 className="animate-spin" size={16} />
-                                ) : (
-                                  <Volume2 size={16} />
-                                )}
-                                Play Instruction
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ));
-                  })()}
+                  <SymptomDisplay
+                    patientId={patientProfile!.patientId}
+                    onPlayVoice={(text) => playVoiceBack("symptom", text)}
+                    isPlaying={isPlaying}
+                  />
                 </div>
               </div>
             )}
